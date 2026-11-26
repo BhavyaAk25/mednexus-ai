@@ -1,0 +1,57 @@
+[
+  {
+    "id": "MN-1042", "name": "Eleanor Hayes", "initials": "EH", "age": 67,
+    "clinic": "Internal medicine", "reason": "Post-discharge medication review", "visit": "2026-11-24", "tone": "sage",
+    "sources": [
+      {"id":"EH-01","date":"2026-11-21","title":"Hospital discharge summary","type":"Visit note","facility":"Northbank Medical Center","format":"PDF","facts":[
+        ["Encounter","The discharge summary records a three-day admission for shortness of breath, with discharge home on November 21."],
+        ["Medication","The discharge medication list records lisinopril 10 mg once daily.","lisinopril","10 mg once daily"],
+        ["Medication","The discharge medication list records furosemide 20 mg once daily.","furosemide","20 mg once daily"],
+        ["Follow-up","The discharge instructions request a primary care visit within seven days."]]},
+      {"id":"EH-02","date":"2026-11-22","title":"Cardiology correspondence","type":"Specialist letter","facility":"Northbank Cardiology","format":"TXT","facts":[
+        ["Medication","The cardiology letter lists lisinopril 20 mg once daily.","lisinopril","20 mg once daily"],
+        ["Follow-up","The cardiology letter requests a basic metabolic panel within one week."],
+        ["Encounter","The letter records a cardiology review following the hospital discharge."]]},
+      {"id":"EH-03","date":"2026-11-23","title":"Basic metabolic panel","type":"Lab export","facility":"Union Lab Services","format":"CSV","facts":[
+        ["Result","Potassium was reported as 4.3 mmol/L on November 23.",null,null,"Potassium","4.3","mmol/L"],
+        ["Result","Creatinine was reported as 1.04 mg/dL on November 23.",null,null,"Creatinine","1.04","mg/dL"]]},
+      {"id":"EH-04","date":"2026-11-24","title":"Intake medication note","type":"Scanned note","facility":"Union Outpatient Clinic","format":"PNG","facts":[
+        ["Medication","The intake note records a patient-reported lisinopril dose of 10 mg once daily.","lisinopril","10 mg once daily"],
+        ["Allergy","Patient reports a penicillin allergy with rash on the intake note."],
+        ["Follow-up","The intake note records that the patient brought a medication bottle for verification."]]}
+    ]
+  },
+  {
+    "id":"MN-1086","name":"Marcus Bell","initials":"MB","age":54,
+    "clinic":"Endocrinology","reason":"Outside lab and referral reconciliation","visit":"2026-11-25","tone":"sand",
+    "sources":[
+      {"id":"MB-01","date":"2026-11-19","title":"Primary care referral","type":"Visit note","facility":"Union Outpatient Clinic","format":"PDF","facts":[
+        ["Encounter","The referral requests endocrinology review after an outside hemoglobin A1c result."],
+        ["Medication","The referral lists metformin 500 mg twice daily.","metformin","500 mg twice daily"],
+        ["Follow-up","The referral requests a repeat urine albumin-to-creatinine ratio."]]},
+      {"id":"MB-02","date":"2026-11-21","title":"Outside lab results","type":"Lab export","facility":"Eastbank Reference Lab","format":"CSV","facts":[
+        ["Result","Hemoglobin A1c was reported as 7.8% on November 21.",null,null,"Hemoglobin A1c","7.8","%"],
+        ["Result","Creatinine was reported as 0.92 mg/dL on November 21.",null,null,"Creatinine","0.92","mg/dL"]]},
+      {"id":"MB-03","date":"2026-11-25","title":"Endocrinology intake","type":"Visit note","facility":"Union Outpatient Clinic","format":"TXT","facts":[
+        ["Medication","The endocrinology intake lists metformin 500 mg twice daily.","metformin","500 mg twice daily"],
+        ["Follow-up","The intake note says the repeat urine albumin-to-creatinine result had not been received."],
+        ["Allergy","The intake note lists allergies as not yet reviewed."]]}
+    ]
+  },
+  {
+    "id":"MN-1135","name":"Priya Moreno","initials":"PM","age":42,
+    "clinic":"Pulmonology","reason":"Specialist and pharmacy handoff","visit":"2026-11-25","tone":"rose",
+    "sources":[
+      {"id":"PM-01","date":"2026-11-18","title":"Pulmonology visit note","type":"Visit note","facility":"Northbank Pulmonary Clinic","format":"PDF","facts":[
+        ["Encounter","The pulmonology visit documents a review of the patient’s inhaler list."],
+        ["Medication","The pulmonology note lists budesonide-formoterol as two puffs twice daily.","budesonide-formoterol","two puffs twice daily"],
+        ["Follow-up","The pulmonology note requests spirometry before the follow-up visit."]]},
+      {"id":"PM-02","date":"2026-11-23","title":"Pharmacy medication list","type":"Medication list","facility":"Union Pharmacy","format":"TXT","facts":[
+        ["Medication","The pharmacy directions list budesonide-formoterol as one puff twice daily.","budesonide-formoterol","one puff twice daily"],
+        ["Medication","The pharmacy list also shows an albuterol inhaler with directions as needed.","albuterol","as needed"]]},
+      {"id":"PM-03","date":"2026-11-25","title":"Scheduling callback","type":"Scanned note","facility":"Union Outpatient Clinic","format":"PNG","facts":[
+        ["Follow-up","The callback note records that the spirometry report is still pending."],
+        ["Encounter","The callback note records that the patient requested an afternoon follow-up slot."]]}
+    ]
+  }
+]

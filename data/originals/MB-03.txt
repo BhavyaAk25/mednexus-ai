@@ -1,0 +1,13 @@
+Endocrinology intake
+Union Outpatient Clinic
+Marcus Bell | MN-1086 | 2026-11-25
+Fictional record for the MedNexus AI course demonstration
+
+Medication
+The endocrinology intake lists metformin 500 mg twice daily.
+
+Follow-up
+The intake note says the repeat urine albumin-to-creatinine result had not been received.
+
+Allergy
+The intake note lists allergies as not yet reviewed.

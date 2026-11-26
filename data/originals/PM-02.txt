@@ -1,0 +1,10 @@
+Pharmacy medication list
+Union Pharmacy
+Priya Moreno | MN-1135 | 2026-11-23
+Fictional record for the MedNexus AI course demonstration
+
+Medication
+The pharmacy directions list budesonide-formoterol as one puff twice daily.
+
+Medication
+The pharmacy list also shows an albuterol inhaler with directions as needed.

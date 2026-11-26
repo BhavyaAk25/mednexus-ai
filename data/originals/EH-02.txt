@@ -1,0 +1,13 @@
+Cardiology correspondence
+Northbank Cardiology
+Eleanor Hayes | MN-1042 | 2026-11-22
+Fictional record for the MedNexus AI course demonstration
+
+Medication
+The cardiology letter lists lisinopril 20 mg once daily.
+
+Follow-up
+The cardiology letter requests a basic metabolic panel within one week.
+
+Encounter
+The letter records a cardiology review following the hospital discharge.
