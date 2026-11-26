@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import CampusMotion from "./CampusMotion";
 import { ChartIcon } from "./ChartIcon";
 
 const stops = [
@@ -12,8 +13,9 @@ const stops = [
 
 export default function Campus() {
   return <figure className="campus-figure">
+    <CampusMotion />
     <Image src="/campus.webp" alt="Isometric model of a hospital campus with four buildings" width={1091} height={755}
-      className="campus-image" unoptimized fetchPriority="high" />
+      className="campus-image" unoptimized loading="eager" fetchPriority="high" />
     <nav aria-label="Records by campus building" className="campus-links">
       {stops.map(stop => <Link key={stop.document} className={`campus-pin pin-${stop.icon}`}
         href={`/workspace?case=MN-1042&source=${stop.document}`} aria-label={`${stop.name}: ${stop.title}`} title={stop.title}>

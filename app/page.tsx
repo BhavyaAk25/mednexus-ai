@@ -29,7 +29,7 @@ export default function Home() {
           <p>Review patient records in one chart. Trace each finding to its source.</p>
           <div className="hero-actions">
             <Link href="/workspace" className="button button-green">Open the workspace <ArrowRight size={18} /></Link>
-            <a href="#workflow" className="text-link">See how it works <ArrowDown size={14} /></a>
+            <a href="#workflow" className="button button-outline hero-secondary">See how it works <ArrowDown size={14} /></a>
           </div>
         </div>
         <Campus />
