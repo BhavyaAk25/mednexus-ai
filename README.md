@@ -42,7 +42,14 @@ Set `MEDNEXUS_URL` if the local app runs on a different port. The benchmark writ
 - `lib/evaluation.ts` compares the same model and prompts on the oldest record alone versus retrieved chart passages. The benchmark measures critical fact recall, citation match rate, seeded conflict detection, and server latency. It has three cases and no human timing or usability measurements.
 - `scripts/campus-model.ts` builds the original campus in Three.js. The homepage serves the static WebP render and links each building directly to an example record. The miniature-isometric direction was inspired by [yU+co's Silicon Valley title sequence](https://www.yuco.com/works/silicon-valley).
 
-The browser uses [the patient portrait sheet](public/patient-portraits.webp), made with built-in image generation. The prompt called for three centered, natural-light outpatient registration portraits in everyday clothes, with sage, warm clay, and dusty rose backdrops.
+The browser uses [the patient portrait sheet](public/patient-portraits.webp), made with built-in image generation.
+
+<details>
+<summary>Patient portrait prompt</summary>
+
+Generate a single horizontal contact sheet for a fictional outpatient medical chart app, three evenly sized square portrait panels in one row, with perfectly straight panel edges at exactly 1/3 and 2/3 width, no whitespace gutters, no frames. Use documentary-style outpatient registration photography, soft window light, real natural faces and an understated matte finish. Each face large, centered within its own third, eyes near the 43% line, with full hair and shoulders visible and equal head scale. Left: Eleanor, 67-year-old woman with silver close-cut hair, fair complexion, and a sage cardigan, on muted sage. Center: Marcus, 54-year-old Black man with closely cropped salt-and-pepper hair and warm medium deep skin, wearing an ordinary ochre overshirt, on light warm clay-beige. Right: Priya, 42-year-old brown-skinned woman with dark shoulder-length wavy hair wearing a simple muted red shirt, on warm dusty rose. Each looks calmly toward camera with a different natural expression. Clean, distinct silhouettes identifiable at 32px. Patient portraits in ordinary clothes, no clinical uniforms, equipment, typography, logos, icons, gradients, borders or decorative glare.
+
+</details>
 
 Regenerate the fictional source files with `python3 scripts/make-originals.py` on macOS with Pillow and ReportLab. Validate PDF, CSV, and TXT passage alignment and PNG readability with `python3 scripts/verify-originals.py` using Pillow and pypdf.
 
