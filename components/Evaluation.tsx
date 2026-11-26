@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownToLine, BarChart3, ChevronRight, Clock3, FlaskConical, LoaderCircle, Play, ShieldCheck } from "lucide-react";
+import { ArrowDownToLine, ChevronRight, LoaderCircle, Play } from "lucide-react";
 import archive from "../data/evaluation-run.json";
 import { requestJson } from "../lib/client";
+import { ChartIcon } from "./ChartIcon";
 import type { Role } from "../lib/types";
 import type { evaluate } from "../lib/evaluation";
 
@@ -71,11 +72,11 @@ export default function Evaluation({ role }: { role: Role }) {
 
   return <article className="eval-view">
     <div className="breadcrumb"><span>Workspace</span><ChevronRight size={13} /><span>Evaluation lab</span></div>
-    <header className="eval-intro"><p className="mono section-kicker">PROTOTYPE BENCHMARK</p><h1>Evaluation lab</h1>
-      <p>Compare a first-document baseline with retrieval across the chart on predefined synthetic cases.</p>
+    <header className="eval-intro"><h1>Evaluation lab</h1>
+      <p>Compare a single record with retrieval across the chart.</p>
     </header>
     <section className="panel eval-controls" aria-label="Benchmark controls">
-      <div className="eval-control-heading"><span className="panel-icon"><FlaskConical size={20} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
+      <div className="eval-control-heading"><span className="panel-icon"><ChartIcon name="lab" size={20} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
       <div className="eval-actions">
         <label className="eval-mode"><span>Processing mode</span><select aria-label="Processing mode" value={mode} onChange={event => setMode(event.target.value as typeof mode)} disabled={running}>
           <option value="retrieval">Evidence extraction</option><option value="model">Use Ollama if available</option>
@@ -86,7 +87,7 @@ export default function Evaluation({ role }: { role: Role }) {
     {error && <p className="error-note" role="alert">{error}</p>}
     {running && <p className="loading-state" role="status">Scoring the assigned cases. Local model runs can take longer.</p>}
     {report && <>
-      <div className="eval-result-heading"><div><span className="mono section-kicker">{label.toUpperCase()}</span><h2>Results at a glance</h2></div>
+      <div className="eval-result-heading"><div><span className="meta-label section-kicker">{label.toUpperCase()}</span><h2>Results</h2></div>
         <button className="button button-outline" onClick={download}><ArrowDownToLine size={15} /> Export results</button>
       </div>
       <div className="metric-grid">
@@ -96,23 +97,23 @@ export default function Evaluation({ role }: { role: Role }) {
         </section>)}
       </div>
       <section className="panel eval-details">
-        <div className="panel-heading"><span className="panel-icon"><BarChart3 size={19} /></span><div><h2>Case results</h2><p>Expanded rows show evidence identifiers and processing mode.</p></div></div>
+        <div className="panel-heading"><span className="panel-icon"><ChartIcon name="evaluation" size={19} /></span><div><h2>Case results</h2></div></div>
         {report.rows.map(row => <details key={row.id} className="eval-case">
-          <summary><span><strong>{row.title}</strong><small className="mono">{row.id}</small></span><span>{row.baseline.criticalFound}/{row.baseline.criticalTotal} → {row.rag.criticalFound}/{row.rag.criticalTotal} facts</span><ChevronRight size={17} /></summary>
+          <summary><span><strong>{row.title}</strong><small className="meta-label">{row.id}</small></span><span>{row.baseline.criticalFound}/{row.baseline.criticalTotal} → {row.rag.criticalFound}/{row.rag.criticalTotal} facts</span><ChevronRight size={17} /></summary>
           <div className="eval-case-body">
             {([["Baseline", row.baseline], ["With retrieval", row.rag]] as const).map(([method, score]) => <div key={method}>
               <h3>{method}</h3><p>{score.generation}{method !== "Baseline" ? ` · ${score.retrieval}` : " · First document"} · {duration(score.latency)}</p>
               <p>Citations {score.correctCitations}/{score.citations} · Conflicts {score.conflictsFound}/{score.conflictsTotal} · Unsupported {score.unsupported} · False flags {score.falseFlags}</p>
-              <p className="mono evidence-identifiers">{score.evidence.join(" · ") || "No evidence"} </p>
+              <p className="meta-label evidence-identifiers">{score.evidence.join(" · ") || "No evidence"} </p>
             </div>)}
-            <p className="expected-cases">Gold critical facts <span className="mono">{row.expected.join(" · ")}</span></p>
+            <p className="expected-cases">Gold critical facts <span className="meta-label">{row.expected.join(" · ")}</span></p>
           </div>
         </details>)}
       </section>
     </>}
     <section className="evaluation-method">
-      <div><ShieldCheck size={18} /><div><h3>How it was scored</h3><p>Recall counts expected facts surfaced in the brief. Citation accuracy checks passage IDs and text against the indexed source. Conflict detection checks the expected pair of medication records. Quotes are constrained to chart text.</p></div></div>
-      <div><Clock3 size={18} /><div><h3>How to interpret the results</h3><p>These fixtures illustrate workflow behavior. The proposed 50% reduction in staff review time requires an observed human timing study. The lab measures server processing time and has no clinician usability sample.</p></div></div>
+      <div><ChartIcon name="verify" size={18} /><div><h3>How it was scored</h3><p>Recall counts expected facts. Citation accuracy matches excerpts to their sources. Conflict detection checks the expected medication record pairs.</p></div></div>
+      <div><ChartIcon name="timeline" size={18} /><div><h3>How to interpret the results</h3><p>Timing covers server processing. The 50% staff review-time target and clinician usability still need a human study.</p></div></div>
     </section>
   </article>;
 }

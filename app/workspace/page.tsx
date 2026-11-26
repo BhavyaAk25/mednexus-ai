@@ -3,7 +3,13 @@ import Workspace from "../../components/Workspace";
 
 export const metadata: Metadata = { title: "Review workspace" };
 
-export default async function WorkspacePage({ searchParams }: { searchParams: Promise<{ view?: string; case?: string }> }) {
+export default async function WorkspacePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string | string[]; case?: string | string[]; source?: string | string[] }>;
+}) {
   const options = await searchParams;
-  return <Workspace initialView={options.view === "evaluation" ? "evaluation" : "records"} initialCase={options.case} />;
+  const patient = typeof options.case === "string" && /^MN-\d{4}$/.test(options.case) ? options.case : undefined;
+  const source = typeof options.source === "string" && /^[A-Z]{2}-\d{2}$/.test(options.source) ? options.source : undefined;
+  return <Workspace initialView={options.view === "evaluation" ? "evaluation" : "records"} initialCase={patient} initialSource={patient ? source : undefined} />;
 }

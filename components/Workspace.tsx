@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, BarChart3, ClipboardList, FolderOpen, LockKeyhole, LogOut, Search, ShieldCheck, Stethoscope, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, LogOut, Search } from "lucide-react";
 import type { Patient, Role } from "../lib/types";
 import { ApiError, requestJson } from "../lib/client";
 import { Brand } from "./Brand";
+import { ChartIcon, RecordAccessArt } from "./ChartIcon";
+import { PatientAvatar } from "./PatientAvatar";
 import WorkspaceCase from "./WorkspaceCase";
 import Evaluation from "./Evaluation";
 
@@ -16,21 +18,20 @@ const roles = { clinician: "Clinician", coordinator: "Care coordinator" };
 function WorkspaceHeader({ index, onExit }: { index?: Index | null; onExit?: () => void }) {
   return <header className="work-header">
     <div className="work-header-in">
+      <Link href="/" className="text-link back-home"><ArrowLeft size={15} /> Overview</Link>
       <Brand />
-      <div className="work-header-end">
-        <span className="demo-chip"><span className="signal-dot" /> Synthetic demo</span>
-        {index ? <button className="button button-outline session-button" onClick={onExit} title="End demo session">
-          <LogOut size={14} /> <span>Exit demo</span>
-        </button> : <Link href="/" className="text-link back-home"><ArrowLeft size={15} /> Overview</Link>}
-      </div>
+      {index && <button className="button button-outline session-button" onClick={onExit} title="End review session">
+        <LogOut size={14} /> Exit session
+      </button>}
     </div>
   </header>;
 }
 
-export default function Workspace({ initialView, initialCase }: { initialView: View; initialCase?: string }) {
+export default function Workspace({ initialView, initialCase, initialSource }: { initialView: View; initialCase?: string; initialSource?: string }) {
   const [index, setIndex] = useState<Index | null | undefined>(undefined);
   const [view, setView] = useState<View>(initialView);
   const [patientId, setPatientId] = useState(initialCase || "");
+  const [sourceId, setSourceId] = useState(initialSource);
   const [search, setSearch] = useState("");
   const [access, setAccess] = useState<Role | null>(null);
   const [error, setError] = useState("");
@@ -47,14 +48,18 @@ export default function Workspace({ initialView, initialCase }: { initialView: V
 
   const current = index?.patients.find(patient => patient.id === patientId) ?? index?.patients[0];
 
+  const requestedSource = view === "records" && current?.id === initialCase ? sourceId : undefined;
+
   useEffect(() => {
     if (!current) return;
     const url = new URL(window.location.href);
     if (view === "evaluation") url.searchParams.set("view", "evaluation");
     else url.searchParams.delete("view");
     url.searchParams.set("case", current.id);
+    if (requestedSource) url.searchParams.set("source", requestedSource);
+    else url.searchParams.delete("source");
     window.history.replaceState(window.history.state, "", url);
-  }, [current, view]);
+  }, [current, view, requestedSource]);
 
   async function enter(role: Role) {
     setError("");
@@ -72,6 +77,7 @@ export default function Workspace({ initialView, initialCase }: { initialView: V
       setIndex(null);
       setView("records");
       setPatientId("");
+      setSourceId(undefined);
       window.history.replaceState(window.history.state, "", "/workspace");
       setSearch("");
       setError("");
@@ -83,20 +89,17 @@ export default function Workspace({ initialView, initialCase }: { initialView: V
     <main className="entry-main">
       {index === undefined ? <p className="loading-state" role="status">Opening the workspace…</p> :
         <section className="entry-card" aria-labelledby="entry-title">
-          <div className="entry-icon"><LockKeyhole size={21} strokeWidth={1.65} /></div>
-          <p className="mono section-kicker">{view === "evaluation" ? "EVALUATION WORKSPACE" : "PATIENT RECORD WORKSPACE"}</p>
-          <h1 id="entry-title">Choose a demo role.</h1>
-          <p className="entry-description">Explore fictional charts in either role. Clinicians can verify all three cases. Care coordinators can review two assigned cases.</p>
+          <RecordAccessArt />
+          <h1 id="entry-title">Choose a role</h1>
           <div className="role-actions">
             <button className="role-option" onClick={() => enter("clinician")} disabled={!!access}>
-              <Stethoscope size={22} /><span><strong>Enter as clinician</strong><small>{access === "clinician" ? "Opening session…" : "Review and verify records"}</small></span><ArrowRight size={17} />
+              <ChartIcon name="clinician" size={24} /><span><strong>Enter as clinician</strong><small>{access === "clinician" ? "Opening session…" : "Review and verify records"}</small></span><ArrowRight size={17} />
             </button>
             <button className="role-option" onClick={() => enter("coordinator")} disabled={!!access}>
-              <Users size={22} /><span><strong>Enter as care coordinator</strong><small>{access === "coordinator" ? "Opening session…" : "Review assigned records"}</small></span><ArrowRight size={17} />
+              <ChartIcon name="coordinator" size={24} /><span><strong>Enter as care coordinator</strong><small>{access === "coordinator" ? "Opening session…" : "Review assigned records"}</small></span><ArrowRight size={17} />
             </button>
           </div>
           {error && <p className="error-note" role="alert">{error}</p>}
-          <p className="entry-note"><ShieldCheck size={15} /> Course simulation with synthetic data</p>
         </section>}
     </main>
   </>;
@@ -108,29 +111,28 @@ export default function Workspace({ initialView, initialCase }: { initialView: V
     <div className="work-layout">
       <aside className="work-sidebar" aria-label="Workspace navigation">
         <div className="sidebar-top">
-          <p className="mono sidebar-label">WORKSPACE</p>
-          <button className="side-nav" aria-current={view === "records" ? "page" : undefined} onClick={() => setView("records")}><FolderOpen size={17} /> Patient records</button>
-          <button className="side-nav" aria-current={view === "evaluation" ? "page" : undefined} onClick={() => setView("evaluation")}><BarChart3 size={17} /> Evaluation lab</button>
+          <button className="side-nav" aria-current={view === "records" ? "page" : undefined} onClick={() => setView("records")}><span className="nav-mark"><ChartIcon name="records" size={16} /></span> Patient records</button>
+          <button className="side-nav" aria-current={view === "evaluation" ? "page" : undefined} onClick={() => { setSourceId(undefined); setView("evaluation"); }}><span className="nav-mark"><ChartIcon name="evaluation" size={16} /></span> Evaluation lab</button>
         </div>
         <div className="case-list">
-          <div className="sidebar-heading"><p className="mono sidebar-label">PATIENTS</p><span>{index.patients.length}</span></div>
+          <div className="sidebar-heading"><p className="meta-label sidebar-label">PATIENTS</p><span>{index.patients.length}</span></div>
           <label className="patient-search"><Search size={15} /><input type="search" aria-label="Search patients" placeholder="Search name or ID" value={search} onChange={e => setSearch(e.target.value)} /></label>
           <div className="case-options">
             {filtered.map(patient => <button className="patient-option" key={patient.id}
-              aria-current={view === "records" && current?.id === patient.id ? "true" : undefined} onClick={() => { setPatientId(patient.id); setView("records"); }}>
-              <span className={`avatar ${patient.tone}`}>{patient.initials}</span>
+              aria-current={view === "records" && current?.id === patient.id ? "true" : undefined} onClick={() => { setSourceId(undefined); setPatientId(patient.id); setView("records"); }}>
+              <PatientAvatar patient={patient} />
               <span><strong>{patient.name}</strong><small>{patient.id}</small></span>
             </button>)}
             {!filtered.length && <p className="empty-search">No matching patients.</p>}
           </div>
         </div>
-        <div className="sidebar-role"><span className="role-icon"><ShieldCheck size={16} /></span><div><strong>{roles[index.role]}</strong><small>Demo permissions</small></div></div>
+        <div className="sidebar-role"><span className="role-icon"><ChartIcon name={index.role} size={16} /></span><strong>{roles[index.role]}</strong></div>
       </aside>
       <main id="work-main" className="work-main">
         {error && <p className="error-note" role="alert">{error}</p>}
         {view === "evaluation" ? <Evaluation role={index.role} /> :
-          current ? <WorkspaceCase key={current.id} patient={current} role={index.role} /> :
-          <p className="loading-state"><ClipboardList size={19} /> No cases assigned.</p>}
+          current ? <WorkspaceCase key={current.id} patient={current} role={index.role} requestedSource={requestedSource} clearRequestedSource={() => setSourceId(undefined)} /> :
+          <p className="loading-state"><ChartIcon name="records" size={19} /> No cases assigned.</p>}
       </main>
     </div>
   </>;
