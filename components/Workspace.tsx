@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, LogOut, Search } from "lucide-react";
+import { findCampusRecord } from "../lib/campus";
 import type { Patient, Role } from "../lib/types";
 import { ApiError, requestJson } from "../lib/client";
 import { Brand } from "./Brand";
@@ -84,6 +85,8 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
     } catch (err) { setError((err as Error).message); }
   }
 
+  const openingRecord = !index && sourceId ? findCampusRecord(initialCase, sourceId) : undefined;
+
   if (!index) return <>
     <WorkspaceHeader />
     <main className="entry-main">
@@ -91,6 +94,7 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
         <section className="entry-card" aria-labelledby="entry-title">
           <RecordAccessArt />
           <h1 id="entry-title">Choose a role</h1>
+          {openingRecord && <p className="entry-record">Opening <strong>{openingRecord.title}</strong></p>}
           <div className="role-actions">
             <button className="role-option" onClick={() => enter("clinician")} disabled={!!access}>
               <ChartIcon name="clinician" size={24} /><span><strong>Enter as clinician</strong><small>{access === "clinician" ? "Opening session…" : "Review and verify records"}</small></span><ArrowRight size={17} />
