@@ -76,7 +76,7 @@ export default function Evaluation({ role }: { role: Role }) {
       <p>Compare a single record with retrieval across the chart.</p>
     </header>
     <section className="panel eval-controls" aria-label="Benchmark controls">
-      <div className="eval-control-heading"><span className="panel-icon"><ChartIcon name="lab" size={20} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
+      <div className="eval-control-heading"><span className="panel-icon"><ChartIcon name="benchmark" size={22} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
       <div className="eval-actions">
         <label className="eval-mode"><span>Processing mode</span><select aria-label="Processing mode" value={mode} onChange={event => setMode(event.target.value as typeof mode)} disabled={running}>
           <option value="retrieval">Evidence extraction</option><option value="model">Use Ollama if available</option>
@@ -97,7 +97,7 @@ export default function Evaluation({ role }: { role: Role }) {
         </section>)}
       </div>
       <section className="panel eval-details">
-        <div className="panel-heading"><span className="panel-icon"><ChartIcon name="evaluation" size={19} /></span><div><h2>Case results</h2></div></div>
+        <div className="panel-heading"><span className="panel-icon"><ChartIcon name="evaluation" size={22} /></span><div><h2>Case results</h2></div></div>
         {report.rows.map(row => <details key={row.id} className="eval-case">
           <summary><span><strong>{row.title}</strong><small className="meta-label">{row.id}</small></span><span>{row.baseline.criticalFound}/{row.baseline.criticalTotal} → {row.rag.criticalFound}/{row.rag.criticalTotal} facts</span><ChevronRight size={17} /></summary>
           <div className="eval-case-body">

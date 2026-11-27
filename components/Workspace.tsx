@@ -7,7 +7,7 @@ import { findCampusRecord } from "../lib/campus";
 import type { Patient, Role } from "../lib/types";
 import { ApiError, requestJson } from "../lib/client";
 import { Brand } from "./Brand";
-import { ChartIcon, RecordAccessArt } from "./ChartIcon";
+import { ChartIcon } from "./ChartIcon";
 import { PatientAvatar } from "./PatientAvatar";
 import WorkspaceCase from "./WorkspaceCase";
 import Evaluation from "./Evaluation";
@@ -92,7 +92,7 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
     <main className="entry-main">
       {index === undefined ? <p className="loading-state" role="status">Opening the workspace…</p> :
         <section className="entry-card" aria-labelledby="entry-title">
-          <RecordAccessArt />
+          <div className="entry-symbol"><ChartIcon name="access" size={36} /></div>
           <h1 id="entry-title">Choose a role</h1>
           {openingRecord && <p className="entry-record">Opening <strong>{openingRecord.title}</strong></p>}
           <div className="role-actions">
