@@ -23,16 +23,18 @@ export default function Home() {
     </header>
 
     <main id="main">
-      <section className="hero shell" aria-labelledby="hero-title">
-        <div className="hero-content">
-          <h1 id="hero-title">Every record.<br /><span>One clear view.</span></h1>
-          <p>Review patient records in one chart. Trace each finding to its source.</p>
-          <div className="hero-actions">
-            <Link href="/workspace" className="button button-green">Open the workspace <ArrowRight size={18} /></Link>
-            <a href="#workflow" className="button button-green">See how it works <ArrowDown size={18} /></a>
+      <section className="hero-band" aria-labelledby="hero-title">
+        <div className="hero shell">
+          <div className="hero-content">
+            <h1 id="hero-title">Every record.<br /><span>One clear view.</span></h1>
+            <p>Review patient records in one chart. Trace each finding to its source.</p>
+            <div className="hero-actions">
+              <Link href="/workspace" className="button button-green">Open the workspace <ArrowRight size={18} /></Link>
+              <a href="#workflow" className="button button-green">See how it works <ArrowDown size={18} /></a>
+            </div>
           </div>
+          <Campus />
         </div>
-        <Campus />
       </section>
       <section className="workflow shell" id="workflow" aria-labelledby="workflow-title">
         <div className="workflow-title">

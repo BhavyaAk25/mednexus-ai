@@ -17,11 +17,11 @@ export function mountCampusScene(canvas: HTMLCanvasElement, figure: HTMLElement)
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = PCFShadowMap;
   renderer.toneMapping = ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.17;
+  renderer.toneMappingExposure = 1.08;
 
   const scene = new Scene();
-  scene.add(new HemisphereLight("#fff1d6", "#6a7660", 2.15));
-  const sun = new DirectionalLight("#fff1d8", 3.06);
+  scene.add(new HemisphereLight("#fff0d7", "#546551", 1.68));
+  const sun = new DirectionalLight("#fff1d7", 3.34);
   sun.position.set(-6, 13, 8);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1536, 1536);
@@ -30,11 +30,11 @@ export function mountCampusScene(canvas: HTMLCanvasElement, figure: HTMLElement)
   sun.shadow.bias = -0.0003;
   scene.add(sun);
 
-  const fill = new DirectionalLight("#b5d4c8", 0.65);
+  const fill = new DirectionalLight("#c3d7c0", 0.36);
   fill.position.set(9, 6, -5);
   scene.add(fill);
   const { move } = buildCampus(scene);
-  const shadow = new Mesh(new PlaneGeometry(34, 34), new ShadowMaterial({ color: "#495346", opacity: 0.20 }));
+  const shadow = new Mesh(new PlaneGeometry(34, 34), new ShadowMaterial({ color: "#101916", opacity: 0.38 }));
   shadow.rotation.x = -Math.PI / 2;
   shadow.position.y = -0.65;
   shadow.receiveShadow = true;

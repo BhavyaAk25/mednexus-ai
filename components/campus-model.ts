@@ -35,12 +35,12 @@ export function buildCampus(scene: T.Scene) {
     batches.get(key)!.transforms.push(object.matrix);
   }
 
-  const p = { grass: "#a7ad81", grass2: "#b9bb94", ivory: "#eee9d6", stone: "#d6d0b8", deep: "#243b35", verge: "#899a78",
-    glass: "#536d63", lightGlass: "#88a197", pine: "#496b52", moss: "#718f58", leaf: "#9fac69", red: "#a74b3b", road: "#5d6760",
-    concrete: "#d8d2bd", line: "#ece3c6", dark: "#374942" };
+  const p = { grass: "#819155", grass2: "#a1a46a", ivory: "#f5e7c9", stone: "#cbb895", deep: "#243b35", verge: "#899a78",
+    glass: "#3b5349", lightGlass: "#687c6b", pine: "#3f6445", moss: "#658345", leaf: "#90a04f", red: "#a3422d", road: "#50554b",
+    concrete: "#d2bb99", line: "#f3dfb4", dark: "#374942" };
 
-  shape("#777f63", 0, -0.40, 0, 13.75, 0.48, 12.4);
-  shape("#c5bc9e", 0, -0.14, 0, 13.82, 0.17, 12.47);
+  shape("#5a5943", 0, -0.40, 0, 13.75, 0.48, 12.4);
+  shape("#ba9d72", 0, -0.14, 0, 13.82, 0.17, 12.47);
   shape(p.grass, 0, 0.005, 0, 13.62, 0.15, 12.28);
   shape(p.road, 0, 0.091, 0, 1.38, 0.035, 12.28, block, 0, undefined, false);
   shape(p.road, 0, 0.092, 4.55, 13.62, 0.035, 1.27, block, 0, undefined, false);
@@ -121,11 +121,11 @@ export function buildCampus(scene: T.Scene) {
     return roof;
   }
 
-  const hospitalRoof = building(-3.57, -2.65, 3.73, 3.60, 6, "#dddec8", "#81947e", "MEDICAL CENTER");
-  building(-1.85, -2.94, 1.28, 2.52, 4, "#b9c6ac", p.deep, "");
-  building(-3.72, 2.22, 3.45, 1.98, 2, "#ded7bd", p.red, "CLINIC");
-  building(3.17, -3.52, 3.35, 2.38, 4, "#d8cab2", "#a17863", "SPECIALISTS");
-  const labRoof = building(3.15, 1.77, 3.36, 2.22, 3, "#c9d4bb", p.deep, "DIAGNOSTICS");
+  const hospitalRoof = building(-3.57, -2.65, 3.73, 3.60, 6, "#e5dcc0", "#798961", "MEDICAL CENTER");
+  building(-1.85, -2.94, 1.28, 2.52, 4, "#adb78a", p.deep, "");
+  building(-3.72, 2.22, 3.45, 1.98, 2, "#e4cfad", p.red, "CLINIC");
+  building(3.17, -3.52, 3.35, 2.38, 4, "#ddc8a4", "#a96a4c", "SPECIALISTS");
+  const labRoof = building(3.15, 1.77, 3.36, 2.22, 3, "#c0c59a", p.deep, "DIAGNOSTICS");
 
   // Rooftop helipad and its painted H.
   shape(p.dark, -3.86, hospitalRoof + 0.022, -2.28, 1.51, 0.09, 1.51, cylinder);
