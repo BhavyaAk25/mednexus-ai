@@ -1,7 +1,8 @@
 "use client";
 
+import * as Select from "@radix-ui/react-select";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownToLine, ChevronRight, LoaderCircle, Play } from "lucide-react";
+import { ArrowDownToLine, Check, ChevronDown, ChevronRight, LoaderCircle, Play } from "lucide-react";
 import archive from "../data/evaluation-run.json";
 import { requestJson } from "../lib/client";
 import { ChartIcon } from "./ChartIcon";
@@ -11,6 +12,11 @@ import type { evaluate } from "../lib/evaluation";
 
 type Report = Awaited<ReturnType<typeof evaluate>>;
 type Score = Report["rows"][number]["baseline"];
+const modes = [
+  { value: "retrieval", label: "Evidence extraction" },
+  { value: "model", label: "Use Ollama if available" },
+] as const;
+type ProcessingMode = typeof modes[number]["value"];
 const percent = (part: number, full: number) => full ? `${Math.round(part / full * 100)}%` : "—";
 const duration = (value: number) => value >= 1000 ? `${(value / 1000).toFixed(1)} s` : `${value} ms`;
 
@@ -28,7 +34,7 @@ function tally(scores: Score[]) {
 export default function Evaluation({ role }: { role: Role }) {
   const archived = role === "clinician" && archive.rows.length ? archive as Report : null;
   const [report, setReport] = useState<Report | null>(archived);
-  const [mode, setMode] = useState<"retrieval" | "model">("retrieval");
+  const [mode, setMode] = useState<ProcessingMode>("retrieval");
   const [running, setRunning] = useState(false);
   const [error, setError] = useState("");
   const [label, setLabel] = useState(archived ? "Recorded local Ollama run" : "");
@@ -79,9 +85,23 @@ export default function Evaluation({ role }: { role: Role }) {
     <section className="panel eval-controls" aria-label="Benchmark controls">
       <div className="eval-control-heading"><span className="panel-icon"><WorkspaceGlyph name="benchmark" size={30} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
       <div className="eval-actions">
-        <label className="eval-mode"><span>Processing mode</span><select aria-label="Processing mode" value={mode} onChange={event => setMode(event.target.value as typeof mode)} disabled={running}>
-          <option value="retrieval">Evidence extraction</option><option value="model">Use Ollama if available</option>
-        </select></label>
+        <div className="eval-mode">
+          <label id="processing-mode-label" htmlFor="processing-mode">Processing mode</label>
+          <Select.Root value={mode} onValueChange={value => setMode(value as ProcessingMode)} disabled={running}>
+            <Select.Trigger id="processing-mode" className="button button-outline eval-mode-trigger">
+              <Select.Value />
+              <Select.Icon className="eval-mode-chevron" asChild><ChevronDown size={15} aria-hidden="true" /></Select.Icon>
+            </Select.Trigger>
+            <Select.Content className="eval-mode-menu" aria-labelledby="processing-mode-label" position="popper" align="start" sideOffset={6} collisionPadding={12}>
+              <Select.Viewport className="eval-mode-options">
+                {modes.map(({ value, label }) => <Select.Item className="eval-mode-option" key={value} value={value}>
+                  <Select.ItemText>{label}</Select.ItemText>
+                  <Select.ItemIndicator><Check size={15} aria-hidden="true" /></Select.ItemIndicator>
+                </Select.Item>)}
+              </Select.Viewport>
+            </Select.Content>
+          </Select.Root>
+        </div>
         <button className="button button-green" onClick={run} disabled={running}>{running ? <LoaderCircle size={15} className="spinner" /> : <Play size={15} />} {running ? "Running…" : "Run comparison"}</button>
       </div>
     </section>
