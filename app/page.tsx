@@ -2,12 +2,12 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Brand } from "../components/Brand";
 import Campus from "../components/Campus";
-import { ChartIcon } from "../components/ChartIcon";
+import { WorkflowIllustration } from "../components/WorkflowIllustration";
 
 const workflow = [
-  { title: "Find the record", copy: "Search notes, labs, and medication lists in one chart.", icon: "records" },
-  { title: "Compare the evidence", copy: "Spot conflicting doses and pending results.", icon: "compare" },
-  { title: "Verify the brief", copy: "Check each finding against the original record.", icon: "verify" },
+  { title: "Find the record", copy: "Browse the clinic’s intake notes and referrals.", step: "find", href: "/campus/clinic" },
+  { title: "Compare the evidence", copy: "See the two recorded doses flagged in Eleanor’s chart.", step: "compare", href: "/workspace?case=MN-1042" },
+  { title: "Verify the brief", copy: "Open the original cardiology letter behind the finding.", step: "verify", href: "/workspace?case=MN-1042&source=EH-02" },
 ] as const;
 
 export default function Home() {
@@ -36,16 +36,24 @@ export default function Home() {
           <Campus />
         </div>
       </section>
-      <section className="workflow shell" id="workflow" aria-labelledby="workflow-title">
-        <div className="workflow-title">
-          <h2 id="workflow-title">The review workflow</h2>
-          <Link href="/workspace?view=evaluation" className="text-link">View the evaluation <ArrowUpRight size={15} /></Link>
-        </div>
-        <div className="workflow-grid">
-          {workflow.map(({ title, copy, icon }) => <article key={title}>
-            <ChartIcon name={icon} size={25} />
-            <h3>{title}</h3><p>{copy}</p>
-          </article>)}
+      <section className="workflow-band" id="workflow" aria-labelledby="workflow-title">
+        <div className="workflow shell">
+          <div className="workflow-title">
+            <h2 id="workflow-title">The review workflow</h2>
+            <Link href="/workspace?view=evaluation" className="text-link">View the evaluation <ArrowUpRight size={15} /></Link>
+          </div>
+          <ul className="workflow-grid">
+            {workflow.map(({ title, copy, step, href }) => <li key={step}>
+              <Link href={href} className="workflow-link" aria-labelledby={`workflow-${step}-title`} aria-describedby={`workflow-${step}-detail`}>
+                <WorkflowIllustration step={step} />
+                <div className="workflow-copy">
+                  <h3 id={`workflow-${step}-title`}>{title}</h3>
+                  <p id={`workflow-${step}-detail`}>{copy}</p>
+                </div>
+                <span className="workflow-arrow"><ArrowUpRight size={16} aria-hidden="true" /></span>
+              </Link>
+            </li>)}
+          </ul>
         </div>
       </section>
     </main>

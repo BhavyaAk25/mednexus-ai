@@ -6,7 +6,6 @@ const drawings = {
   brief: <><path d="M5 3h9l5 5v13H5zM14 3v5h5" /><path d="M8 12h8m-8 4h5" /></>,
   timeline: <><path d="M7 3v18M7 4l2 2-2 2-2-2zm0 6 2 2-2 2-2-2zm0 6 2 2-2 2-2-2zM12 6h7m-7 6h5m-5 6h8" /></>,
   sources: <><path d="M9 3h7l4 4v10H9zM16 3v4h4M6 6H4v15h13v-2" /><path d="M12 11h5m-5 3h3" /></>,
-  compare: <><path d="M3 4h7v11H3zm11 5h7v11h-7zM5 8h3m-3 3h3m8 2h3m-3 3h3M13 5h5l-2-2M11 19H6l2 2" /></>,
   verify: <><path d="M5 3h9l5 5v13H5zM14 3v5h5M8 14l2.5 2.5L16 11" /></>,
   confirm: <path d="m5 12 4.5 4.5L19 7" />,
   undo: <path d="M9 4 5 8l4 4M5 8h9a5 5 0 0 1 0 10H9" />,
