@@ -17,7 +17,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { building } = await params;
   const department = campusBuildings.find(item => item.slug === building);
-  return { title: department && `${department.name} records`, description: department?.description };
+  return { title: department?.title, description: department?.description };
 }
 
 export default async function DepartmentPage({ params }: Props) {
@@ -36,7 +36,7 @@ export default async function DepartmentPage({ params }: Props) {
       <section className="department-content" aria-labelledby="department-title">
         <div className="department-intro">
           <span className="department-mark"><ChartIcon name={department.icon} size={36} /></span>
-          <h1 id="department-title">{department.name} records</h1>
+          <h1 id="department-title">{department.title}</h1>
           <p>{department.description}</p>
         </div>
         <section className="department-records" id="record-list" aria-labelledby="records-heading">

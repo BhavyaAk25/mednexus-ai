@@ -2,6 +2,7 @@ export const campusBuildings = [
   {
     slug: "hospital",
     name: "Hospital",
+    title: "Hospital records",
     icon: "hospital",
     description: "Review what happened during admission and what the team documented at discharge.",
     records: [
@@ -11,6 +12,7 @@ export const campusBuildings = [
   {
     slug: "specialists",
     name: "Specialists",
+    title: "Specialist records",
     icon: "specialist",
     description: "See what a specialist documented after the hospital stay.",
     records: [
@@ -20,6 +22,7 @@ export const campusBuildings = [
   {
     slug: "clinic",
     name: "Clinic",
+    title: "Clinic records",
     icon: "clinic",
     description: "Review what patients report at intake and why they were referred.",
     records: [
@@ -30,6 +33,7 @@ export const campusBuildings = [
   {
     slug: "lab",
     name: "Lab",
+    title: "Lab records",
     icon: "lab",
     description: "Open test results from the lab that reported them.",
     records: [
