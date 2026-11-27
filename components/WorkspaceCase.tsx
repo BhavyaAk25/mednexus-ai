@@ -6,7 +6,8 @@ import { recordDate } from "../lib/dates";
 import { scenarios } from "../lib/scenarios";
 import type { Answer, CaseRecord, Fact, Patient, Role, Scenario, Source } from "../lib/types";
 import { requestJson } from "../lib/client";
-import { ChartIcon, type ChartIconName } from "./ChartIcon";
+import { ChartIcon } from "./ChartIcon";
+import { WorkspaceGlyph, type WorkspaceGlyphName } from "./WorkspaceGlyph";
 import { PatientAvatar } from "./PatientAvatar";
 
 const tabs = [
@@ -16,8 +17,8 @@ const tabs = [
 ] as const;
 type Tab = typeof tabs[number]["label"];
 
-const sourceIcons: Record<Source["format"], ChartIconName> = {
-  CSV: "table", PDF: "brief", PNG: "scan", TXT: "brief",
+const sourceIcons: Record<Source["format"], WorkspaceGlyphName> = {
+  CSV: "table", PDF: "document", PNG: "scan", TXT: "document",
 };
 
 function SourceDialog({ source, highlight, onClose }: { source: Source; highlight?: string; onClose: () => void }) {
@@ -121,9 +122,9 @@ export default function WorkspaceCase({
         <div><h1 id="patient-name">{patient.name}</h1><p>{patient.age} years <span>·</span> {patient.clinic}</p></div>
       </div>
       <div className="case-actions">
-        {record?.reviewed ? <span className="verification-status is-verified" role="status"><ChartIcon name="verified" size={16} /> Verified in this browser</span> :
-          <span className="verification-status" role="status"><ChartIcon name="pending" size={16} /> Verification pending</span>}
-        {role === "clinician" && record && <button className="button button-outline review-button" onClick={() => update("review")} disabled={!!busy}>
+        {record?.reviewed ? <span className="verification-status is-verified" role="status"><WorkspaceGlyph name="verified" size={16} /> Verified in this browser</span> :
+          <span className="verification-status" role="status"><WorkspaceGlyph name="pending" size={16} /> Verification pending</span>}
+        {role === "clinician" && record && <button className={`button ${record.reviewed ? "button-outline" : "button-green"} review-button`} onClick={() => update("review")} disabled={!!busy}>
           {busy === "review" ? <LoaderCircle size={15} className="spinner" /> : <ChartIcon name={record.reviewed ? "undo" : "confirm"} size={16} />} {record.reviewed ? "Undo verification" : "Mark verified"}
         </button>}
       </div>
@@ -160,7 +161,7 @@ export default function WorkspaceCase({
       </section>
       <div className="summary-grid">
         <section className="panel evidence-panel" aria-labelledby="brief-title" aria-busy={busy === "answer"}>
-          <div className="panel-heading"><div className="panel-icon"><ChartIcon name="evidence" size={22} /></div><div><h2 id="brief-title">Visit brief</h2>
+          <div className="panel-heading"><div className="panel-icon"><WorkspaceGlyph name="brief" size={30} /></div><div><h2 id="brief-title">Visit brief</h2>
             <p>{hasGenerated ? `${answer.generation} · ${answer.retrieval} · ${answer.latency >= 1000 ? (answer.latency / 1000).toFixed(1) + " s" : answer.latency + " ms"}` : "Chart overview · Source excerpts"}</p></div></div>
           {!answer.findings.length && <p className="panel-empty">No matching passages were retrieved. Try a medication, result, or follow-up mentioned in the chart.</p>}
           <ul className="evidence-list">
@@ -176,10 +177,10 @@ export default function WorkspaceCase({
               return fact && <button key={id} className="citation" onClick={() => openFact(fact)}>{id}<ArrowUpRight size={11} /></button>;
             })}</div>
           </details>}
-          <p className="panel-foot"><ChartIcon name="verified" size={16} /> Verify against the original records.</p>
+          <p className="panel-foot"><WorkspaceGlyph name="verified" size={16} /> Verify against the original records.</p>
         </section>
         <section className="panel flags-panel" aria-labelledby="flags-title">
-          <div className="panel-heading"><div className="panel-icon panel-icon-rust"><ChartIcon name="review" size={22} /></div><div>
+          <div className="panel-heading"><div className="panel-icon panel-icon-rust"><WorkspaceGlyph name="review" size={30} /></div><div>
             <h2 id="flags-title">Needs review</h2><p>{hasGenerated ? `${answer.flags.length} in this brief` : `${discrepancyCount} in the chart`}</p>
           </div></div>
           {!answer.flags.length && <p className="panel-empty">No items flagged.</p>}
@@ -205,9 +206,9 @@ export default function WorkspaceCase({
     </section>}
 
     {record && tab === "Source records" && <section className="panel documents" aria-labelledby="sources-heading">
-      <div className="panel-heading"><div className="panel-icon"><ChartIcon name="sources" size={22} /></div><div><h2 id="sources-heading">Source records</h2></div></div>
+      <div className="panel-heading"><div className="panel-icon"><WorkspaceGlyph name="sources" size={30} /></div><div><h2 id="sources-heading">Source records</h2></div></div>
       {sources.map(document => <button className="document-row" key={document.id} onClick={() => setSource({ document })}>
-        <span className="document-icon"><ChartIcon name={sourceIcons[document.format]} size={20} /></span>
+        <span className="document-icon"><WorkspaceGlyph name={sourceIcons[document.format]} size={23} /></span>
         <span><strong>{document.title}</strong><small>{document.facility} · {recordDate(document.date)}</small></span>
         <span className="format-tag">{document.format}</span><ArrowUpRight size={16} />
       </button>)}

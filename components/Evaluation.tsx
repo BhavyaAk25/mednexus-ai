@@ -5,6 +5,7 @@ import { ArrowDownToLine, ChevronRight, LoaderCircle, Play } from "lucide-react"
 import archive from "../data/evaluation-run.json";
 import { requestJson } from "../lib/client";
 import { ChartIcon } from "./ChartIcon";
+import { WorkspaceGlyph } from "./WorkspaceGlyph";
 import type { Role } from "../lib/types";
 import type { evaluate } from "../lib/evaluation";
 
@@ -76,7 +77,7 @@ export default function Evaluation({ role }: { role: Role }) {
       <p>Compare a single record with retrieval across the chart.</p>
     </header>
     <section className="panel eval-controls" aria-label="Benchmark controls">
-      <div className="eval-control-heading"><span className="panel-icon"><ChartIcon name="benchmark" size={22} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
+      <div className="eval-control-heading"><span className="panel-icon"><WorkspaceGlyph name="benchmark" size={30} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
       <div className="eval-actions">
         <label className="eval-mode"><span>Processing mode</span><select aria-label="Processing mode" value={mode} onChange={event => setMode(event.target.value as typeof mode)} disabled={running}>
           <option value="retrieval">Evidence extraction</option><option value="model">Use Ollama if available</option>

@@ -8,6 +8,7 @@ import type { Patient, Role } from "../lib/types";
 import { ApiError, requestJson } from "../lib/client";
 import { Brand } from "./Brand";
 import { ChartIcon } from "./ChartIcon";
+import { WorkspaceGlyph } from "./WorkspaceGlyph";
 import { PatientAvatar } from "./PatientAvatar";
 import WorkspaceCase from "./WorkspaceCase";
 import Evaluation from "./Evaluation";
@@ -92,15 +93,15 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
     <main className="entry-main">
       {index === undefined ? <p className="loading-state" role="status">Opening the workspace…</p> :
         <section className="entry-card" aria-labelledby="entry-title">
-          <div className="entry-symbol"><ChartIcon name="access" size={36} /></div>
+          <div className="entry-symbol"><WorkspaceGlyph name="access" size={42} /></div>
           <h1 id="entry-title">Choose a role</h1>
           {openingRecord && <p className="entry-record">Opening <strong>{openingRecord.title}</strong></p>}
           <div className="role-actions">
             <button className="role-option" onClick={() => enter("clinician")} disabled={!!access}>
-              <ChartIcon name="clinician" size={24} /><span><strong>Enter as clinician</strong><small>{access === "clinician" ? "Opening session…" : "Review and verify records"}</small></span><ArrowRight size={17} />
+              <WorkspaceGlyph name="clinician" size={26} /><span><strong>Enter as clinician</strong><small>{access === "clinician" ? "Opening session…" : "Review and verify records"}</small></span><ArrowRight size={17} />
             </button>
             <button className="role-option" onClick={() => enter("coordinator")} disabled={!!access}>
-              <ChartIcon name="coordinator" size={24} /><span><strong>Enter as care coordinator</strong><small>{access === "coordinator" ? "Opening session…" : "Review assigned records"}</small></span><ArrowRight size={17} />
+              <WorkspaceGlyph name="coordinator" size={26} /><span><strong>Enter as care coordinator</strong><small>{access === "coordinator" ? "Opening session…" : "Review assigned records"}</small></span><ArrowRight size={17} />
             </button>
           </div>
           {error && <p className="error-note" role="alert">{error}</p>}
@@ -130,7 +131,7 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
             {!filtered.length && <p className="empty-search">No matching patients.</p>}
           </div>
         </div>
-        <div className="sidebar-role"><span className="role-icon"><ChartIcon name={index.role} size={16} /></span><strong>{roles[index.role]}</strong></div>
+        <div className="sidebar-role"><span className="role-icon"><WorkspaceGlyph name={index.role} size={21} /></span><strong>{roles[index.role]}</strong></div>
       </aside>
       <main id="work-main" className="work-main">
         {error && <p className="error-note" role="alert">{error}</p>}
