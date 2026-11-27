@@ -4,6 +4,8 @@ MedNexus AI is a course prototype for reviewing scattered outpatient records. It
 
 ## Demo the workflow
 
+[Open the public demo](https://mednexus-chart.vercel.app).
+
 1. Open **Workspace** and choose **Enter as clinician**. Each homepage building has a records page with examples. Open a record, then choose a role if prompted.
 2. Open **Eleanor Hayes**. Under **Needs review**, open the cardiology source and compare its lisinopril entry with the discharge and intake records.
 3. Choose **Medication reconciliation** and generate a brief. Expand **Retrieved evidence** to see what entered the workflow.
@@ -55,4 +57,8 @@ Regenerate the fictional source files with `python3 scripts/make-originals.py` o
 
 ## Project brief
 
-The [Word brief](MedNexus%20AI%20Project%20Brief.docx) covers demonstration steps, data provenance, the technical architecture, measured outcomes, and a proposed pilot.
+The [Word brief](MedNexus%20AI%20Project%20Brief.docx) covers demonstration steps, the full source inventory, SQLite columns and sample rows, the retrieval and model pipeline, and the measured outcomes.
+
+## License
+
+[MIT](LICENSE)
