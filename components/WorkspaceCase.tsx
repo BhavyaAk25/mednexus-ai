@@ -61,6 +61,7 @@ export default function WorkspaceCase({
 }) {
   const [record, setRecord] = useState<(CaseRecord & { answer: Answer }) | null>(null);
   const [answer, setAnswer] = useState<Answer | null>(null);
+  const [visibleDocuments, setVisibleDocuments] = useState(20);
   const [tab, setTab] = useState<Tab>(requestedSource ? "Source records" : "Summary");
   const [scenario, setScenario] = useState<Scenario>("overview");
   const [question, setQuestion] = useState("");
@@ -153,7 +154,7 @@ export default function WorkspaceCase({
               {Object.entries(scenarios).map(([key, item]) => <option value={key} key={key}>{item.label}</option>)}
             </select>
           </label>
-          <label className="question-field"><span>Ask about this chart <small>Optional</small></span>
+          <label className="question-field"><span>Ask about this chart <small>Fictional data only</small></span>
             <span className="question-input"><Search size={16} /><input value={question} maxLength={240} onChange={event => setQuestion(event.target.value)} placeholder="e.g. What was the latest potassium result?" disabled={!!busy} /></span>
           </label>
           <button className="button button-green" type="submit" disabled={!!busy}>{busy === "answer" ? <><LoaderCircle size={15} className="spinner" /> Reviewing…</> : <>Generate brief <ArrowRight size={16} /></>}</button>
@@ -162,7 +163,7 @@ export default function WorkspaceCase({
       <div className="summary-grid">
         <section className="panel evidence-panel" aria-labelledby="brief-title" aria-busy={busy === "answer"}>
           <div className="panel-heading"><div className="panel-icon"><WorkspaceGlyph name="brief" size={30} /></div><div><h2 id="brief-title">Visit brief</h2>
-            <p>{hasGenerated ? `${answer.generation} · ${answer.retrieval} · ${answer.latency >= 1000 ? (answer.latency / 1000).toFixed(1) + " s" : answer.latency + " ms"}` : "Chart overview · Source excerpts"}</p></div></div>
+            <p>{hasGenerated ? `${answer.generation}${answer.model ? " · " + answer.model : ""} · ${answer.retrieval} · ${answer.latency >= 1000 ? (answer.latency / 1000).toFixed(1) + " s" : answer.latency + " ms"}` : "Chart overview · Source excerpts"}</p></div></div>
           {!answer.findings.length && <p className="panel-empty">No matching passages were retrieved. Try a medication, result, or follow-up mentioned in the chart.</p>}
           <ul className="evidence-list">
             {answer.findings.map(fact => <li key={fact.id}>
@@ -196,22 +197,25 @@ export default function WorkspaceCase({
     {record && tab === "Timeline" && <section className="panel timeline" aria-labelledby="timeline-heading">
       <div className="panel-heading"><div className="panel-icon"><ChartIcon name="timeline" size={22} /></div><div><h2 id="timeline-heading">Chart timeline</h2></div></div>
       <ol>
-        {sources.map(document => <li key={document.id}><time dateTime={document.date}>{recordDate(document.date, false)}</time><div>
+        {sources.slice(0, visibleDocuments).map(document => <li key={document.id}><time dateTime={document.date}>{recordDate(document.date, false)}</time><div>
           <span className="meta-label section-kicker">{document.type}</span>
           <button className="timeline-source" onClick={() => setSource({ document })}>{document.title} <ArrowUpRight size={14} /></button>
           <p>{document.facility}</p>
-          <ul>{document.facts.map(fact => <li key={fact.id}>{fact.text}</li>)}</ul>
+          <ul>{(patient.cohort ? document.facts.slice(-6).reverse() : document.facts).map(fact => <li key={fact.id}>{fact.text}</li>)}</ul>
+          {patient.cohort && document.facts.length > 6 && <p>Showing 6 of {document.facts.length} passages. Open the source to see the complete list.</p>}
         </div></li>)}
       </ol>
+      {sources.length > visibleDocuments && <button className="button button-outline" onClick={() => setVisibleDocuments(visibleDocuments + 20)}>Show more timeline records</button>}
     </section>}
 
     {record && tab === "Source records" && <section className="panel documents" aria-labelledby="sources-heading">
       <div className="panel-heading"><div className="panel-icon"><WorkspaceGlyph name="sources" size={30} /></div><div><h2 id="sources-heading">Source records</h2></div></div>
-      {sources.map(document => <button className="document-row" key={document.id} onClick={() => setSource({ document })}>
+      {sources.slice(0, visibleDocuments).map(document => <button className="document-row" key={document.id} onClick={() => setSource({ document })}>
         <span className="document-icon"><WorkspaceGlyph name={sourceIcons[document.format]} size={23} /></span>
         <span><strong>{document.title}</strong><small>{document.facility} · {recordDate(document.date)}</small></span>
         <span className="format-tag">{document.format}</span><ArrowUpRight size={16} />
       </button>)}
+      {sources.length > visibleDocuments && <button className="button button-outline" onClick={() => setVisibleDocuments(visibleDocuments + 20)}>Show more sources</button>}
     </section>}
     {source && <SourceDialog key={source.document.id} source={source.document} highlight={source.fact} onClose={() => { setSource(null); clearRequestedSource(); }} />}
   </article>;

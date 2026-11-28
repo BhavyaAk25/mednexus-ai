@@ -7,3 +7,6 @@ node_modules/
 next-env.d.ts
 *.tsbuildinfo
 .vercel
+
+# Unmodified upstream archive, downloaded separately.
+data/upstream/

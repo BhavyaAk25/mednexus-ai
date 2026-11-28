@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "check": "tsc --noEmit",
-    "index": "node scripts/index-vectors.mjs",
     "evaluate": "node scripts/evaluate.mjs"
   },
   "author": "",

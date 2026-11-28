@@ -1,0 +1,62 @@
+[
+  {
+    "id": "SN-0015",
+    "title": "Urea nitrogen [Mass/volume] in Blood",
+    "scenario": "results",
+    "question": "What was the recorded Urea nitrogen [Mass/volume] in Blood result on 2025-12-01?",
+    "critical": [
+      "SN-0015-OBS-2025-1.42"
+    ],
+    "conflicts": []
+  },
+  {
+    "id": "SN-0069",
+    "title": "Urea nitrogen [Mass/volume] in Blood",
+    "scenario": "results",
+    "question": "What was the recorded Urea nitrogen [Mass/volume] in Blood result on 2016-06-18?",
+    "critical": [
+      "SN-0069-OBS-2016-1.66"
+    ],
+    "conflicts": []
+  },
+  {
+    "id": "SN-0075",
+    "title": "Urea nitrogen [Mass/volume] in Blood",
+    "scenario": "results",
+    "question": "What was the recorded Urea nitrogen [Mass/volume] in Blood result on 2025-05-31?",
+    "critical": [
+      "SN-0075-OBS-2025-1.44"
+    ],
+    "conflicts": []
+  },
+  {
+    "id": "SN-0026",
+    "title": "pH of Urine by Test strip",
+    "scenario": "results",
+    "question": "What was the recorded pH of Urine by Test strip result on 2026-10-26?",
+    "critical": [
+      "SN-0026-OBS-2026-2.88"
+    ],
+    "conflicts": []
+  },
+  {
+    "id": "SN-0030",
+    "title": "Urea nitrogen [Mass/volume] in Blood",
+    "scenario": "results",
+    "question": "What was the recorded Urea nitrogen [Mass/volume] in Blood result on 2025-12-12?",
+    "critical": [
+      "SN-0030-OBS-2025-1.70"
+    ],
+    "conflicts": []
+  },
+  {
+    "id": "SN-0068",
+    "title": "Platelets [#/volume] in Blood by Automated count",
+    "scenario": "results",
+    "question": "What was the recorded Platelets [#/volume] in Blood by Automated count result on 2023-07-14?",
+    "critical": [
+      "SN-0068-OBS-2023-1.20"
+    ],
+    "conflicts": []
+  }
+]

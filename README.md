@@ -2,47 +2,64 @@
 
 MedNexus AI is a course prototype for reviewing scattered outpatient records. It brings synthetic notes, labs, medication lists, and scanned intake forms into a patient timeline and a source-linked visit brief. The chart flags documented conflicts for clinician verification.
 
-## Demo the workflow
+## Try the workflow
 
-[Open the public demo](https://mednexus-chart.vercel.app).
-
-1. Open **Workspace** and choose **Enter as clinician**. Each homepage building has a records page with examples. Open a record, then choose a role if prompted.
-2. Open **Eleanor Hayes**. Under **Needs review**, open the cardiology source and compare its lisinopril entry with the discharge and intake records.
-3. Choose **Medication reconciliation** and generate a brief. Expand **Retrieved evidence** to see what entered the workflow.
-4. Open **Timeline** and **Source records**, then try **Mark verified**. Verification is stored in a signed browser cookie.
-5. Open **Evaluation lab** to inspect the recorded Ollama benchmark or run and export a new comparison.
-
-The coordinator role sees two assigned cases and cannot change verification state. All records are fictional. The role selector simulates access controls and is open to anyone using the demo.
+[Open the public demo](https://mednexus-chart.vercel.app). For the three authored cases, select **Workspace → Enter as clinician → Walkthrough**. Choose **Eleanor Hayes** to review the seeded medication discrepancy behind the source citations. Choose **Synthea** in the patient sidebar to browse the imported cohort. Open **Evaluation lab** for either the walkthrough cases or six held-out Synthea lab questions. The care coordinator role sees its two assigned walkthrough cases.
 
 ## Run locally
 
-Use Node.js 22 and npm. The web app runs in evidence-extraction mode when Ollama is unavailable. Install the two Ollama models for the live generative workflow.
+Use Node.js 22.
 
 ```sh
 npm ci
-ollama pull qwen2.5:1.5b
-ollama pull nomic-embed-text
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). No API key is needed. Ollama's local app or service should be running. The public hosting mode uses the bundled Nomic vectors for preset review prompts, SQLite full-text search for free-text questions, and exact source excerpts for briefs. The app labels the active retrieval and generation mode. The evaluation page includes the recorded local Qwen run.
+Open [localhost:3000](http://localhost:3000). Evidence extraction works without credentials.
+
+## Hosted model configuration
+
+Create a key in [GroqCloud](https://console.groq.com/keys) or [Google AI Studio](https://aistudio.google.com/apikey). Check the provider's free-tier limits before enabling it. In the Vercel project, open **Settings → Environment Variables**, and add the key as a **Sensitive** value in **Preview** for initial testing. Add it to **Production** when ready to publish the tested configuration. Deploy after saving the environment variable.
+
+| Variable | Default model |
+| --- | --- |
+| `GROQ_API_KEY` | `openai/gpt-oss-20b` |
+| `GEMINI_API_KEY` | `gemini-3.1-flash-lite` |
+
+Set a key in a gitignored `.env.local` for local model testing. Optional `GROQ_MODEL` and `GEMINI_MODEL` overrides are in `.env.example`. Groq is preferred for briefs when both keys exist. Evaluation lets you select each configured provider separately. Use only fictional content in the app. Keys are read by server routes and are never sent to browsers. See [Groq rate limits](https://console.groq.com/docs/rate-limits) and [Gemini pricing](https://aistudio.google.com/docs/pricing).
+
+## Data and evaluation
+
+- The authored walkthrough contains 3 fictional charts, 10 sources and 27 indexed passages. `data/cases.json` defines those charts, and `data/originals/` contains the generated files.
+- The official [Synthea sample](https://synthetichealth.github.io/downloads.html) is labeled 100 patients. The imported snapshot contains 112 unique patient IDs in 18 CSV files. The app indexes 104,326 passages from encounters, conditions, medications, observations and allergies across those patients. Direct identifiers, addresses and billing fields are excluded from the app bundle. The unmodified archive is downloaded separately and ignored by Git and Vercel.
+- `data/synthea-manifest.json` records the upstream download, SHA-256 and table counts. `data/synthea.json` contains the normalized cohort, grouped by chart, table and year. Its source downloads are generated excerpts in CSV. The six holdout questions and expected passage IDs are recorded in `data/synthea-benchmark.json`.
+- SQLite FTS5 ranks passages within the authorized chart. The server can ask the configured provider to select passage IDs in structured JSON, then checks the IDs and renders cited excerpts. Conflict and missing-document flags use explicit rules. Available passages are displayed as evidence extracts if inference is unavailable.
+- The benchmark compares the oldest document with retrieved passages from the same chart. The cohort suite tests lab value retrieval. The walkthrough suite tests seeded medication conflicts. Both report critical fact recall, citation accuracy and latency. The evaluation labels any provider runs that fall back to evidence extraction.
+
+Reproduce the normalized dataset from the source archive:
+
+```sh
+mkdir -p data/upstream
+curl -fL https://synthetichealth.github.io/synthea-sample-data/downloads/latest/synthea_sample_data_csv_latest.zip -o data/upstream/synthea-100-csv.zip
+python3 scripts/import-synthea.py data/upstream/synthea-100-csv.zip
+```
+
+The dataset was generated with Synthea. See [Walonoski et al., 2018](https://doi.org/10.1093/jamia/ocx079).
+
+With the app running:
 
 ```sh
 npm run check
 npm run build
 npm run evaluate
-npm run evaluate -- --evidence-only
+npm run evaluate -- --walkthrough
+npm run evaluate -- --mode=groq
+npm run evaluate -- --mode=gemini
 ```
 
-Set `MEDNEXUS_URL` if the local app runs on a different port. The benchmark writes its JSON results to standard output. Run `npm run index` to rebuild the Nomic vector index after editing the fixture corpus or preset prompts.
+Set `MEDNEXUS_URL` for a non-default port. The benchmark writes JSON to standard output. Provider runs require the corresponding key on the server.
 
-## Data and system
-
-- `data/cases.json` defines 3 fictional charts, 10 original files, and 27 reviewed passages. `data/originals/` contains the PDF, TXT, CSV, and PNG files. The PNG notes have pre-reviewed transcriptions. The demo has no live OCR or document uploads.
-- `lib/store.ts` loads patient, document, passage, and full-text indexes into SQLite in each application process. API queries check the active role and patient assignment. Signed, HTTP-only cookies hold the demo role and browser-specific verification. A deployed build needs a `DEMO_SESSION_SECRET` environment variable.
-- `lib/workflow.ts` ranks within the selected chart, adds other evidence for the same medication, compares recorded directions, and surfaces explicit documentation gaps. Qwen returns passage IDs in a structured response. The server checks those IDs and renders exact excerpts from the original sources. Gap detection and medication comparison are deterministic.
-- `lib/evaluation.ts` compares the same model and prompts on the oldest record alone versus retrieved chart passages. The benchmark measures critical fact recall, citation match rate, seeded conflict detection, and server latency. It has three cases and no human timing or usability measurements.
-- `components/campus-model.ts` builds the original campus in Three.js. Vehicles and pedestrians move briefly when the campus comes into view. The WebP render serves as a fallback for reduced motion or unavailable WebGL. Each building opens its own list of example records. The miniature-isometric direction was inspired by [yU+co's Silicon Valley title sequence](https://www.yuco.com/works/silicon-valley).
+Three.js renders the original miniature campus. Each building opens a list of example records. The isometric design was inspired by [yU+co's Silicon Valley title sequence](https://www.yuco.com/works/silicon-valley).
 
 The browser uses [the patient portrait sheet](public/patient-portraits.webp), made with built-in image generation.
 

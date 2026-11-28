@@ -3,22 +3,49 @@
 import * as Select from "@radix-ui/react-select";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDownToLine, Check, ChevronDown, ChevronRight, LoaderCircle, Play } from "lucide-react";
-import archive from "../data/evaluation-run.json";
 import { requestJson } from "../lib/client";
 import { ChartIcon } from "./ChartIcon";
 import { WorkspaceGlyph } from "./WorkspaceGlyph";
-import type { Role } from "../lib/types";
+import type { ModelProvider, ProcessingMode, Role } from "../lib/types";
 import type { evaluate } from "../lib/evaluation";
 
 type Report = Awaited<ReturnType<typeof evaluate>>;
 type Score = Report["rows"][number]["baseline"];
 const modes = [
   { value: "retrieval", label: "Evidence extraction" },
-  { value: "model", label: "Use Ollama if available" },
+  { value: "groq", label: "Groq" },
+  { value: "gemini", label: "Gemini" },
 ] as const;
-type ProcessingMode = typeof modes[number]["value"];
+
 const percent = (part: number, full: number) => full ? `${Math.round(part / full * 100)}%` : "—";
 const duration = (value: number) => value >= 1000 ? `${(value / 1000).toFixed(1)} s` : `${value} ms`;
+
+function SelectField({ id, label, value, options, disabled, onChange }: {
+  id: string;
+  label: string;
+  value: string;
+  options: readonly { value: string; label: string; disabled?: boolean }[];
+  disabled: boolean;
+  onChange: (value: string) => void;
+}) {
+  return <div className="eval-mode">
+    <label id={`${id}-label`} htmlFor={id}>{label}</label>
+    <Select.Root value={value} onValueChange={onChange} disabled={disabled}>
+      <Select.Trigger id={id} className="button button-outline eval-mode-trigger">
+        <Select.Value />
+        <Select.Icon className="eval-mode-chevron" asChild><ChevronDown size={15} aria-hidden="true" /></Select.Icon>
+      </Select.Trigger>
+      <Select.Content className="eval-mode-menu" aria-labelledby={`${id}-label`} position="popper" align="start" sideOffset={6} collisionPadding={12}>
+        <Select.Viewport className="eval-mode-options">
+          {options.map(option => <Select.Item className="eval-mode-option" key={option.value} value={option.value} disabled={option.disabled}>
+            <Select.ItemText>{option.label}</Select.ItemText>
+            <Select.ItemIndicator><Check size={15} aria-hidden="true" /></Select.ItemIndicator>
+          </Select.Item>)}
+        </Select.Viewport>
+      </Select.Content>
+    </Select.Root>
+  </div>;
+}
 
 function tally(scores: Score[]) {
   return scores.reduce((acc, score) => ({
@@ -31,13 +58,13 @@ function tally(scores: Score[]) {
     conflictsFound: 0, conflictsTotal: 0, unsupported: 0, falseFlags: 0, latency: 0 });
 }
 
-export default function Evaluation({ role }: { role: Role }) {
-  const archived = role === "clinician" && archive.rows.length ? archive as Report : null;
-  const [report, setReport] = useState<Report | null>(archived);
+export default function Evaluation({ role, providers }: { role: Role; providers: ModelProvider[] }) {
+  const [report, setReport] = useState<Report | null>(null);
+  const [suite, setSuite] = useState<"walkthrough" | "synthea">(role === "clinician" ? "synthea" : "walkthrough");
   const [mode, setMode] = useState<ProcessingMode>("retrieval");
   const [running, setRunning] = useState(false);
   const [error, setError] = useState("");
-  const [label, setLabel] = useState(archived ? "Recorded local Ollama run" : "");
+  const [label, setLabel] = useState("");
   const request = useRef<AbortController | null>(null);
   useEffect(() => () => request.current?.abort(), []);
 
@@ -48,12 +75,14 @@ export default function Evaluation({ role }: { role: Role }) {
     setError("");
     try {
       const data = await requestJson<Report>("/api/records", {
-        method: "POST", signal: controller.signal, body: JSON.stringify({ action: "evaluate", useModel: mode === "model" }),
+        method: "POST", signal: controller.signal, body: JSON.stringify({ action: "evaluate", mode, suite }),
       });
       setReport(data);
       const scores = data.rows.flatMap(row => [row.baseline, row.rag]);
-      const generations = scores.filter(score => score.generation === "Qwen via Ollama").length;
-      setLabel(generations === scores.length ? "Live Ollama run" : generations > 0 ? "Live run with model and evidence extracts" : "Live evidence-extraction run");
+      const generations = scores.filter(score => score.generation !== "Evidence extract");
+      setLabel(mode === "retrieval" ? "Evidence-extraction run" : generations.length === scores.length
+        ? `${generations[0]?.generation} · ${generations[0]?.model}`
+        : `${generations.length}/${scores.length} answers used the selected model · excerpt fallback for the rest`);
     } catch (err) { if (!controller.signal.aborted) setError((err as Error).message); }
     finally { if (!controller.signal.aborted) setRunning(false); }
   }
@@ -73,7 +102,7 @@ export default function Evaluation({ role }: { role: Role }) {
   const measures = [
     { label: "Critical fact recall", base: percent(before.criticalFound, before.criticalTotal), rag: percent(after.criticalFound, after.criticalTotal), sample: `${after.criticalFound}/${after.criticalTotal} expected facts`, target: "Pilot target ≥99%" },
     { label: "Citation accuracy", base: percent(before.correctCitations, before.citations), rag: percent(after.correctCitations, after.citations), sample: `${after.correctCitations}/${after.citations} source links`, target: "Pilot target ≥95%" },
-    { label: "Medication discrepancies", base: percent(before.conflictsFound, before.conflictsTotal), rag: percent(after.conflictsFound, after.conflictsTotal), sample: `${after.conflictsFound}/${after.conflictsTotal} seeded conflicts`, target: "Pilot target ≥90%" },
+    { label: "Medication discrepancies", base: percent(before.conflictsFound, before.conflictsTotal), rag: percent(after.conflictsFound, after.conflictsTotal), sample: `${after.conflictsFound}/${after.conflictsTotal} seeded conflicts`, target: after.conflictsTotal ? "Pilot target ≥90%" : "Measured in walkthrough cases" },
     { label: "Mean processing latency", base: duration(Math.round(before.latency / (report?.rows.length || 1))), rag: duration(Math.round(after.latency / (report?.rows.length || 1))), sample: "Server time per case", target: "Measured separately from review time" },
   ];
 
@@ -83,30 +112,21 @@ export default function Evaluation({ role }: { role: Role }) {
       <p>Compare a single record with retrieval across the chart.</p>
     </header>
     <section className="panel eval-controls" aria-label="Benchmark controls">
-      <div className="eval-control-heading"><span className="panel-icon"><WorkspaceGlyph name="benchmark" size={30} /></span><div><h2>Run the benchmark</h2><p>{role === "clinician" ? "3 labeled cases · 10 critical facts · 2 medication conflicts" : "2 cases assigned to this demo role"}</p></div></div>
+      <div className="eval-control-heading"><span className="panel-icon"><WorkspaceGlyph name="benchmark" size={30} /></span><div><h2>Run the benchmark</h2><p>{suite === "synthea" ? "6 held-out Synthea lab questions" : role === "clinician" ? "3 walkthrough cases · 2 seeded medication conflicts" : "2 assigned walkthrough cases"}</p></div></div>
       <div className="eval-actions">
-        <div className="eval-mode">
-          <label id="processing-mode-label" htmlFor="processing-mode">Processing mode</label>
-          <Select.Root value={mode} onValueChange={value => setMode(value as ProcessingMode)} disabled={running}>
-            <Select.Trigger id="processing-mode" className="button button-outline eval-mode-trigger">
-              <Select.Value />
-              <Select.Icon className="eval-mode-chevron" asChild><ChevronDown size={15} aria-hidden="true" /></Select.Icon>
-            </Select.Trigger>
-            <Select.Content className="eval-mode-menu" aria-labelledby="processing-mode-label" position="popper" align="start" sideOffset={6} collisionPadding={12}>
-              <Select.Viewport className="eval-mode-options">
-                {modes.map(({ value, label }) => <Select.Item className="eval-mode-option" key={value} value={value}>
-                  <Select.ItemText>{label}</Select.ItemText>
-                  <Select.ItemIndicator><Check size={15} aria-hidden="true" /></Select.ItemIndicator>
-                </Select.Item>)}
-              </Select.Viewport>
-            </Select.Content>
-          </Select.Root>
-        </div>
+        {role === "clinician" && <SelectField id="benchmark-suite" label="Benchmark" value={suite} disabled={running}
+          options={[{ value: "synthea", label: "Synthea holdout" }, { value: "walkthrough", label: "Walkthrough cases" }]}
+          onChange={value => { setSuite(value as typeof suite); setReport(null); }} />}
+        <SelectField id="processing-mode" label="Processing mode" value={mode} disabled={running}
+          options={modes.map(({ value, label }) => value !== "retrieval" && !providers.includes(value)
+            ? { value, label: label + " · Key needed", disabled: true }
+            : { value, label })}
+          onChange={value => setMode(value as ProcessingMode)} />
         <button className="button button-green" onClick={run} disabled={running}>{running ? <LoaderCircle size={15} className="spinner" /> : <Play size={15} />} {running ? "Running…" : "Run comparison"}</button>
       </div>
     </section>
     {error && <p className="error-note" role="alert">{error}</p>}
-    {running && <p className="loading-state" role="status">Scoring the assigned cases. Local model runs can take longer.</p>}
+    {running && <p className="loading-state" role="status">Scoring the selected cases. Hosted model runs may take longer.</p>}
     {report && <>
       <div className="eval-result-heading"><div><span className="meta-label section-kicker">{label.toUpperCase()}</span><h2>Results</h2></div>
         <button className="button button-outline" onClick={download}><ArrowDownToLine size={15} /> Export results</button>
@@ -127,6 +147,7 @@ export default function Evaluation({ role }: { role: Role }) {
               <p>Citations {score.correctCitations}/{score.citations} · Conflicts {score.conflictsFound}/{score.conflictsTotal} · Unsupported {score.unsupported} · False flags {score.falseFlags}</p>
               <p className="meta-label evidence-identifiers">{score.evidence.join(" · ") || "No evidence"} </p>
             </div>)}
+            {row.question && <p className="expected-cases">{row.question}</p>}
             <p className="expected-cases">Gold critical facts <span className="meta-label">{row.expected.join(" · ")}</span></p>
           </div>
         </details>)}

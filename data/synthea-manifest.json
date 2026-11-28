@@ -1,0 +1,36 @@
+{
+  "source": "https://synthetichealth.github.io/synthea-sample-data/downloads/latest/synthea_sample_data_csv_latest.zip",
+  "sha256": "2d96d9ea4dc099f433e648d6403a8651b5c5362c8d706ac8aeffb98ed33b5426",
+  "patients": 112,
+  "sourceFiles": 18,
+  "upstreamRows": {
+    "conditions": 4017,
+    "payer_transitions": 4865,
+    "providers": 280,
+    "imaging_studies": 9659,
+    "allergies": 125,
+    "claims": 14016,
+    "immunizations": 1635,
+    "claims_transactions": 141300,
+    "encounters": 7548,
+    "procedures": 19245,
+    "supplies": 2936,
+    "organizations": 280,
+    "payers": 10,
+    "medications": 6468,
+    "careplans": 406,
+    "devices": 688,
+    "observations": 86168,
+    "patients": 112
+  },
+  "indexedRows": {
+    "encounters": 7548,
+    "conditions": 4017,
+    "medications": 6468,
+    "observations": 86168,
+    "allergies": 125
+  },
+  "indexedPassages": 104326,
+  "documents": 5476,
+  "holdoutCases": 6
+}

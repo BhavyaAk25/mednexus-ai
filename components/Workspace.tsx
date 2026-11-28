@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, LogOut, Search } from "lucide-react";
 import { findCampusRecord } from "../lib/campus";
-import type { Patient, Role } from "../lib/types";
+import type { ModelProvider, Patient, Role } from "../lib/types";
 import { ApiError, requestJson } from "../lib/client";
 import { Brand } from "./Brand";
 import { ChartIcon } from "./ChartIcon";
@@ -14,7 +14,7 @@ import WorkspaceCase from "./WorkspaceCase";
 import Evaluation from "./Evaluation";
 
 type View = "records" | "evaluation";
-type Index = { role: Role; patients: Patient[] };
+type Index = { role: Role; patients: Patient[]; providers: ModelProvider[] };
 const roles = { clinician: "Clinician", coordinator: "Care coordinator" };
 
 function WorkspaceHeader({ index, onExit }: { index?: Index | null; onExit?: () => void }) {
@@ -35,6 +35,8 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
   const [patientId, setPatientId] = useState(initialCase || "");
   const [sourceId, setSourceId] = useState(initialSource);
   const [search, setSearch] = useState("");
+  const [cohort, setCohort] = useState(initialCase?.startsWith("SN-") ? "synthea" : "walkthrough");
+  const [visible, setVisible] = useState(15);
   const [access, setAccess] = useState<Role | null>(null);
   const [error, setError] = useState("");
 
@@ -79,6 +81,8 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
       setIndex(null);
       setView("records");
       setPatientId("");
+      setCohort("walkthrough");
+      setVisible(15);
       setSourceId(undefined);
       window.history.replaceState(window.history.state, "", "/workspace");
       setSearch("");
@@ -109,7 +113,9 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
     </main>
   </>;
 
-  const filtered = index.patients.filter(patient => `${patient.name} ${patient.id} ${patient.clinic}`.toLowerCase().includes(search.trim().toLowerCase()));
+  const selectedGroup = index.role === "clinician" ? cohort : "walkthrough";
+  const cohortPatients = index.patients.filter(patient => (patient.cohort ?? "walkthrough") === selectedGroup);
+  const filtered = cohortPatients.filter(patient => `${patient.name} ${patient.id} ${patient.clinic}`.toLowerCase().includes(search.trim().toLowerCase()));
   return <>
     <a href="#work-main" className="skip-link">Skip to review</a>
     <WorkspaceHeader index={index} onExit={exit} />
@@ -120,14 +126,18 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
           <button className="side-nav" aria-current={view === "evaluation" ? "page" : undefined} onClick={() => { setSourceId(undefined); setView("evaluation"); }}><span className="nav-mark"><ChartIcon name="evaluation" size={16} /></span> Evaluation lab</button>
         </div>
         <div className="case-list">
-          <div className="sidebar-heading"><p className="meta-label sidebar-label">PATIENTS</p><span>{index.patients.length}</span></div>
-          <label className="patient-search"><Search size={15} /><input type="search" aria-label="Search patients" placeholder="Search name or ID" value={search} onChange={e => setSearch(e.target.value)} /></label>
+          <div className="sidebar-heading"><p className="meta-label sidebar-label">PATIENTS</p><span>{cohortPatients.length}</span></div>
+          {index.role === "clinician" && <div className="cohort-switch" aria-label="Patient groups">
+            {(["walkthrough", "synthea"] as const).map(group => <button key={group} type="button" className="button button-outline cohort-button" aria-pressed={cohort === group} onClick={() => { setCohort(group); setSearch(""); setVisible(15); }}>{group === "synthea" ? "Synthea" : "Walkthrough"}</button>)}
+          </div>}
+          <label className="patient-search"><Search size={15} /><input type="search" aria-label="Search patients" placeholder="Search name or ID" value={search} onChange={e => { setSearch(e.target.value); setVisible(15); }} /></label>
           <div className="case-options">
-            {filtered.map(patient => <button className="patient-option" key={patient.id}
+            {filtered.slice(0, visible).map(patient => <button className="patient-option" key={patient.id}
               aria-current={view === "records" && current?.id === patient.id ? "true" : undefined} onClick={() => { setSourceId(undefined); setPatientId(patient.id); setView("records"); }}>
               <PatientAvatar patient={patient} />
               <span><strong>{patient.name}</strong><small>{patient.id}</small></span>
             </button>)}
+            {filtered.length > visible && <button type="button" className="button button-outline more-charts" onClick={() => setVisible(visible + 15)}>Show more charts</button>}
             {!filtered.length && <p className="empty-search">No matching patients.</p>}
           </div>
         </div>
@@ -135,7 +145,7 @@ export default function Workspace({ initialView, initialCase, initialSource }: {
       </aside>
       <main id="work-main" className="work-main">
         {error && <p className="error-note" role="alert">{error}</p>}
-        {view === "evaluation" ? <Evaluation role={index.role} /> :
+        {view === "evaluation" ? <Evaluation role={index.role} providers={index.providers ?? []} /> :
           current ? <WorkspaceCase key={current.id} patient={current} role={index.role} requestedSource={requestedSource} clearRequestedSource={() => setSourceId(undefined)} /> :
           <p className="loading-state"><ChartIcon name="records" size={19} /> No cases assigned.</p>}
       </main>

@@ -1,6 +1,9 @@
+export type ModelProvider = "groq" | "gemini";
+export type ProcessingMode = ModelProvider | "retrieval";
+
 export type Role = "clinician" | "coordinator";
 export type RecordType = "Visit note" | "Specialist letter" | "Lab export" | "Scanned note" | "Medication list";
-export type FactKind = "Encounter" | "Medication" | "Result" | "Follow-up" | "Allergy";
+export type FactKind = "Encounter" | "Medication" | "Result" | "Follow-up" | "Allergy" | "Condition";
 export type Scenario = "overview" | "medications" | "results" | "follow-up";
 
 export interface Fact {
@@ -30,6 +33,7 @@ export interface Patient {
   reason: string;
   visit: string;
   tone: string;
+  cohort?: "synthea";
 }
 export interface CaseRecord {
   patient: Patient;
@@ -45,8 +49,9 @@ export interface Flag {
 export interface Answer {
   findings: Fact[];
   flags: Flag[];
-  retrieval: "Nomic embeddings" | "SQLite full-text" | "First document" | "Chart overview";
-  generation: "Qwen via Ollama" | "Evidence extract";
+  retrieval: "SQLite full-text" | "First document" | "Chart overview";
+  generation: "Groq" | "Gemini" | "Evidence extract";
+  model?: string;
   latency: number;
   contextIds: string[];
 }

@@ -543,3 +543,13 @@ svg { flex-shrink: 0; }
   .department-mark svg { width: 30px; height: 30px; }
   .department-records { padding-top: 0; }
 }
+
+.cohort-switch { display: flex; gap: 4px; margin-bottom: 9px; flex-wrap: wrap; }
+.workspace .cohort-button,.workspace .more-charts { --control-cut: var(--chart-cut); --control-fill: transparent; --control-edge: #6a9e85; color: var(--rail-text); padding: 4px 10px; min-height: 30px; font-size: 12px; }
+.workspace .cohort-button:hover,.workspace .more-charts:hover { --control-fill: #1d664b; }
+.workspace .cohort-button[aria-pressed="true"] { --control-fill: var(--lime); --control-edge: var(--lime); color: var(--pine); }
+.eval-mode-option[data-disabled] { opacity: .6; cursor: not-allowed; }
+@media(max-width: 1080px) {
+  .eval-controls { align-items: stretch; flex-direction: column; }
+  .eval-actions { flex-wrap: wrap; }
+}
