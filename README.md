@@ -4,7 +4,7 @@ MedNexus AI is a course prototype for reviewing scattered outpatient records. It
 
 ## Try the workflow
 
-[Open the public demo](https://mednexus-chart.vercel.app). For the three authored cases, select **Workspace → Enter as clinician → Walkthrough**. Choose **Eleanor Hayes** to review the seeded medication discrepancy behind the source citations. Choose **Synthea** in the patient sidebar to browse the imported cohort. Open **Evaluation lab** for either the walkthrough cases or six held-out Synthea lab questions. The care coordinator role sees its two assigned walkthrough cases.
+[Open the tested Vercel preview](https://mednexus-93n6r8imn-bhavya-s-projects-c5d9835c.vercel.app) with your Vercel account. Select **Workspace → Enter as clinician → Walkthrough**, then choose **Eleanor Hayes** to compare the two sources with different medication directions. Choose **Synthea** in the patient sidebar to browse the imported cohort. Open **Evaluation lab** for either the walkthrough cases or six held-out Synthea lab questions. The care coordinator role sees two assigned walkthrough cases. The [public demo](https://mednexus-chart.vercel.app) runs the earlier release.
 
 ## Run locally
 
@@ -19,7 +19,7 @@ Open [localhost:3000](http://localhost:3000). Evidence extraction works without 
 
 ## Hosted model configuration
 
-Create a key in [GroqCloud](https://console.groq.com/keys) or [Google AI Studio](https://aistudio.google.com/apikey). Check the provider's free-tier limits before enabling it. In the Vercel project, open **Settings → Environment Variables**, and add the key as a **Sensitive** value in **Preview** for initial testing. Add it to **Production** when ready to publish the tested configuration. Deploy after saving the environment variable.
+Create a key in [GroqCloud](https://console.groq.com/keys) or [Google AI Studio](https://aistudio.google.com/apikey). Check the provider's free-tier limits. In the Vercel project, open **Settings → Environment Variables** and add the key as a **Secret** in **Preview**. Deploy after saving the environment variable.
 
 | Variable | Default model |
 | --- | --- |
