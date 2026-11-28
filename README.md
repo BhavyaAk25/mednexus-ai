@@ -4,7 +4,7 @@ MedNexus AI is a course prototype for reviewing scattered outpatient records. It
 
 ## Try the workflow
 
-[Open the tested Vercel preview](https://mednexus-93n6r8imn-bhavya-s-projects-c5d9835c.vercel.app) with your Vercel account. Select **Workspace → Enter as clinician → Walkthrough**, then choose **Eleanor Hayes** to compare the two sources with different medication directions. Choose **Synthea** in the patient sidebar to browse the imported cohort. Open **Evaluation lab** for either the walkthrough cases or six held-out Synthea lab questions. The care coordinator role sees two assigned walkthrough cases. The [public demo](https://mednexus-chart.vercel.app) runs the earlier release.
+[Open the public demo](https://mednexus-chart.vercel.app). Select **Workspace → Enter as clinician → Walkthrough**, then choose **Eleanor Hayes** to compare the two sources with different medication directions. Choose **Synthea** in the patient sidebar to browse the imported cohort. Open **Evaluation lab** for either the walkthrough cases or six held-out Synthea lab questions. The care coordinator role sees two assigned walkthrough cases.
 
 ## Run locally
 
