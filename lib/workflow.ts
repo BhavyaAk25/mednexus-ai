@@ -25,7 +25,7 @@ function discrepancyFlags(facts: Fact[]) {
 }
 
 
-export async function buildAnswer(sources: Source[], scenario: Scenario, question = "", baseline = false, provider?: ModelProvider): Promise<Answer> {
+export async function buildAnswer(sources: Source[], scenario: Scenario, question = "", baseline = false, providers: readonly ModelProvider[] = []): Promise<Answer> {
   const start = performance.now();
   const facts = sources.flatMap(source => source.facts);
   const prompt = question || scenarios[scenario].question;
@@ -39,7 +39,13 @@ export async function buildAnswer(sources: Source[], scenario: Scenario, questio
   const context = [...selection, ...related].slice(0, 14);
   const scope = !baseline && !question ? facts : context;
   const limit = question ? 4 : 7;
-  const chosen = provider && context.length ? await chooseEvidence(provider, prompt, context, limit, !!question) : null;
+  let chosen = null;
+  if (context.length) {
+    for (const provider of providers) {
+      chosen = await chooseEvidence(provider, prompt, context, limit, !!question);
+      if (chosen) break;
+    }
+  }
   return {
     findings: chosen?.findings ?? selection.slice(0, limit),
     flags: discrepancyFlags(scope),

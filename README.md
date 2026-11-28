@@ -26,7 +26,7 @@ Create a key in [GroqCloud](https://console.groq.com/keys) or [Google AI Studio]
 | `GROQ_API_KEY` | `openai/gpt-oss-20b` |
 | `GEMINI_API_KEY` | `gemini-3.1-flash-lite` |
 
-Set a key in a gitignored `.env.local` for local model testing. Optional `GROQ_MODEL` and `GEMINI_MODEL` overrides are in `.env.example`. Groq is preferred for briefs when both keys exist. Evaluation lets you select each configured provider separately. Use only fictional content in the app. Keys are read by server routes and are never sent to browsers. See [Groq rate limits](https://console.groq.com/docs/rate-limits) and [Gemini pricing](https://aistudio.google.com/docs/pricing).
+Set each key in the gitignored `.env.local` for local testing, or as a Secret in the project's Vercel environment. Optional `GROQ_MODEL` and `GEMINI_MODEL` overrides are in `.env.example`. The brief tries Groq first, then Gemini if Groq fails, then ranked excerpts if neither provider is available. Evaluation uses the selected provider alone and reports any excerpt fallback. Use only fictional content in the app. Server routes keep the keys private. See [Groq rate limits](https://console.groq.com/docs/rate-limits) and [Gemini pricing](https://aistudio.google.com/docs/pricing).
 
 ## Data and evaluation
 

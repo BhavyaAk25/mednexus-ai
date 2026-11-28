@@ -40,12 +40,13 @@ function score(answer: Answer, expected: EvaluationCase, sources: Source[]) {
 
 export async function evaluate(role: Role, suite: "walkthrough" | "synthea", provider?: ModelProvider) {
   const cases = suite === "synthea" ? heldout as EvaluationCase[] : walkthrough;
+  const providers = provider ? [provider] : [];
   const rows = [];
   for (const fixture of cases) {
     const sources = caseSources(role, fixture.id);
     if (!sources?.length) continue;
-    const single = await buildAnswer(sources, fixture.scenario, fixture.question, true, provider);
-    const retrieved = await buildAnswer(sources, fixture.scenario, fixture.question, false, provider);
+    const single = await buildAnswer(sources, fixture.scenario, fixture.question, true, providers);
+    const retrieved = await buildAnswer(sources, fixture.scenario, fixture.question, false, providers);
     rows.push({
       id: fixture.id, title: fixture.title, question: fixture.question, expected: fixture.critical,
       baseline: score(single, fixture, sources), rag: score(retrieved, fixture, sources),

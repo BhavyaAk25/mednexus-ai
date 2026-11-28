@@ -48,5 +48,5 @@ export async function POST(request: Request) {
   if (payload.action !== "summarize" || !isScenario(payload.scenario)) return json({ error: "Choose a review scenario." }, 400);
   const question = typeof payload.question === "string" ? payload.question.trim() : "";
   if (question.length > 240) return json({ error: "Use 240 characters or fewer." }, 400);
-  return json(await buildAnswer(sources, payload.scenario, question, false, availableProviders()[0]));
+  return json(await buildAnswer(sources, payload.scenario, question, false, availableProviders()));
 }
